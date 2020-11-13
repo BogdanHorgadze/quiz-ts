@@ -1,6 +1,6 @@
-type answersType = string | null
+type answersType = string | null 
 
-type answers = {
+export type answers = {
     answer_a :answersType,
     answer_b :answersType,
     answer_c :answersType,
@@ -9,7 +9,7 @@ type answers = {
     answer_f :answersType
 }
 
-type CorrectAnswers = {
+export type CorrectAnswers = {
     answer_a :boolean,
     answer_b :boolean,
     answer_c :boolean,
@@ -23,5 +23,6 @@ export type getDataType = {
     category : string,
     difficulty : string,
     answers : answers,
-    correct_answers : CorrectAnswers
+    correct_answers : CorrectAnswers,
+    question : string
 }
