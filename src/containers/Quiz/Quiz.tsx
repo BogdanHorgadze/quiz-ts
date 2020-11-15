@@ -18,18 +18,18 @@ const Quiz: React.FC = () => {
     const questions: Array<getDataType> = useSelector((state: AppState) => state.quizReducer.questions)
 
     const [start, setStart] = useState<boolean>(false)
+    const [limit , setLimit] = useState<number>(5)
     const [currentQuestion, setCurrentQuestion] = useState<number>(0)
     const [score, setScore] = useState<number>(0)
     const [showAnswers, setShowAnswers] = useState<boolean>(false)
     let match = useParams<Params>();
-    console.log(questions)
 
     useEffect(() => {
-        dispatch(getQuestionsThunk(`${url}&category=${match.category}&difficulty=${match.difficult}&limit=5`))
+        dispatch(getQuestionsThunk(`${url}&category=${match.category}&difficulty=${match.difficult}&limit=${limit}`))
     }, [])
 
-    const nextQuesion = () => {
-        if (showAnswers) {
+    const nextQuestion = () => {
+        if (showAnswers && currentQuestion < limit - 1) {
             setCurrentQuestion(prev => prev + 1)
             setShowAnswers(false)
         }
@@ -59,11 +59,13 @@ const Quiz: React.FC = () => {
                         answers={questions[currentQuestion].answers}
                         correctAnswers={questions[currentQuestion].correct_answers}
                         question={questions[currentQuestion].question}
-                        nextQuesion={nextQuesion}
+                        nextQuestion={nextQuestion}
                         checkAnswer={checkAnswer}
                         score={score}
                         showAnswers={showAnswers}
                         start={start}
+                        limit={limit}
+                        currentQuestion={currentQuestion}
                     />
             }
         </div>

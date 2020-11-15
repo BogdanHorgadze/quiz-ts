@@ -1,5 +1,6 @@
 import React from 'react'
-import { answers , CorrectAnswers } from '../../Interfaces/Interfaces'
+import { Link } from 'react-router-dom'
+import { answers, CorrectAnswers } from '../../Interfaces/Interfaces'
 
 interface Props {
     question: string,
@@ -7,12 +8,24 @@ interface Props {
     showAnswers: boolean,
     score: number,
     start: boolean,
+    limit : number,
+    currentQuestion: number,
     correctAnswers: CorrectAnswers,
-    nextQuesion: () => void,
+    nextQuestion: () => void,
     checkAnswer: (selectedAnswer: string) => void
 }
 
-const Questions: React.FC<Props> = ({ question, answers, nextQuesion, checkAnswer, showAnswers, score, start , correctAnswers }) => {
+const Questions: React.FC<Props> = ({
+    question, 
+    answers, 
+    nextQuestion, 
+    checkAnswer, 
+    showAnswers, 
+    score, start, 
+    correctAnswers , 
+    limit,
+    currentQuestion
+}) => {
 
     const renderQuestion = () => {
         return Object.keys(answers).map((item, i) => {
@@ -29,22 +42,23 @@ const Questions: React.FC<Props> = ({ question, answers, nextQuesion, checkAnswe
     }
 
     const renderAnswers = () => {
-        return Object.keys(answers).map((answer, i) => {
-            if (answers[answer as keyof typeof answers]) {
-                Object.keys(correctAnswers).map(correctAnswer => {
-                    console.log(correctAnswers)
+        return Object.keys(answers).map((item, i) => {
+            if (answers[item as keyof typeof answers]) {
+                return Object.keys(correctAnswers).map(correct => {
+                    if (correct.slice(0, 8) === item) {
+                        return (
+                            <div key={i}>
+                                <li style={String(correctAnswers[correct as keyof CorrectAnswers]) === 'true' ? {color : 'green'} : {color:'red'}}>
+                                    {answers[item as keyof typeof answers]}
+                                </li>
+                            </div>
+                        )
+                    }
                 })
-                // return (
-                //     <div key={i}>
-                //         <li>
-                //             {answers[item as keyof typeof answers]}
-                //         </li>
-                //     </div>
-                // )
             }
         })
     }
-    console.log(showAnswers)
+
     return (
         <div>
             <h2>Score:{score}</h2>
@@ -54,7 +68,8 @@ const Questions: React.FC<Props> = ({ question, answers, nextQuesion, checkAnswe
                     ? renderAnswers()
                     : renderQuestion()
             }
-            <button onClick={nextQuesion} disabled={!showAnswers}>next</button>
+            <div>{currentQuestion + 1} / {limit}</div>
+            <button onClick={nextQuestion} disabled={!showAnswers}>{currentQuestion === limit - 1 ? <Link to="/category">finish</Link> : 'next'}</button>
         </div>
     )
 }
