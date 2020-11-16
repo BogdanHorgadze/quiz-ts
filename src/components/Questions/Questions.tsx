@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { answers, CorrectAnswers } from '../../Interfaces/Interfaces'
 
@@ -8,24 +8,34 @@ interface Props {
     showAnswers: boolean,
     score: number,
     start: boolean,
-    limit : number,
+    limit: number,
+    time: string,
     currentQuestion: number,
     correctAnswers: CorrectAnswers,
     nextQuestion: () => void,
+    endTest: () => void,
+    startTimer: () => void,
     checkAnswer: (selectedAnswer: string) => void
 }
 
 const Questions: React.FC<Props> = ({
-    question, 
-    answers, 
-    nextQuestion, 
-    checkAnswer, 
-    showAnswers, 
-    score, start, 
-    correctAnswers , 
+    question,
+    answers,
+    nextQuestion,
+    checkAnswer,
+    showAnswers,
+    score, start,
+    correctAnswers,
     limit,
-    currentQuestion
+    currentQuestion,
+    time,
+    startTimer,
+    endTest
 }) => {
+
+    useEffect(() => {
+        startTimer()
+    }, [])
 
     const renderQuestion = () => {
         return Object.keys(answers).map((item, i) => {
@@ -48,7 +58,7 @@ const Questions: React.FC<Props> = ({
                     if (correct.slice(0, 8) === item) {
                         return (
                             <div key={i}>
-                                <li style={String(correctAnswers[correct as keyof CorrectAnswers]) === 'true' ? {color : 'green'} : {color:'red'}}>
+                                <li style={String(correctAnswers[correct as keyof CorrectAnswers]) === 'true' ? { color: 'green' } : { color: 'red' }}>
                                     {answers[item as keyof typeof answers]}
                                 </li>
                             </div>
@@ -62,6 +72,7 @@ const Questions: React.FC<Props> = ({
     return (
         <div>
             <h2>Score:{score}</h2>
+            <h2>Time : {time}</h2>
             <h2>{question}</h2>
             {
                 showAnswers && start
@@ -69,7 +80,8 @@ const Questions: React.FC<Props> = ({
                     : renderQuestion()
             }
             <div>{currentQuestion + 1} / {limit}</div>
-            <button onClick={nextQuestion} disabled={!showAnswers}>{currentQuestion === limit - 1 ? <Link to="/category">finish</Link> : 'next'}</button>
+
+            <button onClick={nextQuestion} disabled={!showAnswers}>{currentQuestion === limit - 1 && showAnswers ? <Link onClick={endTest} to="/category">finish</Link> : 'next'}</button>
         </div>
     )
 }

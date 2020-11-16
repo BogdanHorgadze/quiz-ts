@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom';
+import { startChange } from "../../store/actions/action";
 
 interface ICategory {
     category: string
@@ -9,6 +10,11 @@ interface ICategory {
 const Main: React.FC = () => {
     const dispatch = useDispatch()
     const [data, setData] = useState<ICategory[]>([{ category: 'Linux' }, { category: 'DevOps' }, { category: 'Docker' }])
+
+    useEffect(() => {
+        dispatch(startChange(false))
+        console.log('done')
+    },[])
 
     const renderCategories = () => {
         return data.map((item, i) => {

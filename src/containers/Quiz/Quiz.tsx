@@ -3,8 +3,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { answers, getDataType } from '../../Interfaces/Interfaces';
 import { AppState } from "../../store/reducers/rootReducer";
 import { useParams } from 'react-router-dom'
-import { getQuestionsThunk } from "../../store/actions/action";
+import { getQuestionsThunk, startChange } from "../../store/actions/action";
 import Questions from '../../components/Questions/Questions';
+import moment from "moment";
 
 type Params = {
     category: string,
@@ -16,11 +17,12 @@ const Quiz: React.FC = () => {
 
     const url: string = useSelector((state: AppState) => state.quizReducer.url)
     const questions: Array<getDataType> = useSelector((state: AppState) => state.quizReducer.questions)
+    const start: boolean = useSelector((state: AppState) => state.quizReducer.start)
 
-    const [start, setStart] = useState<boolean>(false)
-    const [limit , setLimit] = useState<number>(5)
+    const [limit, setLimit] = useState<number>(5)
     const [currentQuestion, setCurrentQuestion] = useState<number>(0)
     const [score, setScore] = useState<number>(0)
+    const [time, setTime] = useState<string>('00:00:00')
     const [showAnswers, setShowAnswers] = useState<boolean>(false)
     let match = useParams<Params>();
 
@@ -48,13 +50,36 @@ const Quiz: React.FC = () => {
         })
     }
 
+    const startTimer = () => {
+        let seconds = 0
+        let timer: NodeJS.Timeout
+        const callback = () => {
+            if (start) {
+                seconds++
+                const formatted = moment.utc(seconds * 1000).format('HH:mm:ss');
+                setTime(formatted)
+                console.log('quiz', start)
+            } else {
+                clearInterval(timer)
+            }
+        }
+        timer = setInterval(callback, 1000)
+    }
+
+
+    const endTestHandler = () => {
+        dispatch(startChange(false))
+        console.log('endTest')
+    }
+
+    console.log(start, 'dsfsd')
     return (
         <div>
             <h1>{questions[0]?.category}</h1>
             <h2>{questions[0]?.difficulty}</h2>
             {
                 !start
-                    ? <button onClick={() => setStart(true)}>start</button>
+                    ? <button onClick={() => dispatch(startChange(true))}>start</button>
                     : <Questions
                         answers={questions[currentQuestion].answers}
                         correctAnswers={questions[currentQuestion].correct_answers}
@@ -65,7 +90,10 @@ const Quiz: React.FC = () => {
                         showAnswers={showAnswers}
                         start={start}
                         limit={limit}
+                        time={time}
                         currentQuestion={currentQuestion}
+                        startTimer={startTimer}
+                        endTest={endTestHandler}
                     />
             }
         </div>

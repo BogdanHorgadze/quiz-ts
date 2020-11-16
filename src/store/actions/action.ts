@@ -1,5 +1,5 @@
 import { Dispatch } from "react"
-import { GETQUESTIONS } from "./actionTypes"
+import { GETQUESTIONS , START } from "./actionTypes"
 import { getDataType } from "../../Interfaces/Interfaces";
 import axios from 'axios'
 
@@ -25,4 +25,16 @@ const getQuestions = (data : getDataType)  : getQuestionsType => {
     }
 }
 
-export type ActionsTypes = getQuestionsType
+type startChangeType = {
+    type : typeof START,
+    payload : boolean
+}
+
+export const startChange = (value : boolean) : startChangeType => {
+    return {
+        type: START,
+        payload : value
+    }
+}
+
+export type ActionsTypes = getQuestionsType | startChangeType
